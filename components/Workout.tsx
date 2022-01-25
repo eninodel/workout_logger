@@ -1,102 +1,96 @@
-import React, { ReactElement, ReactNode, useState } from "react";
-import {
-  Box,
-  Center,
-  View,
-  Text,
-  Modal,
-  FormControl,
-  Input,
-  Button,
-} from "native-base";
-import { Pressable } from "react-native";
-import { dayWorkouts } from "./DailyPage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-interface individualWorkout {
-  date: string;
-  num: number;
-}
+import React, { ReactElement, useState, useRef } from "react";
+import { Platform, Pressable, Text } from "react-native";
+import { workout } from "../Interfaces";
+import LogWorkoutModal from "./LogWorkoutModal";
+import DeleteWorkoutAlertDialog from "./DeleteWorkoutAlertDialog";
+import * as WebBrowser from "expo-web-browser";
 
 export default function Workout({
-  title,
-  reps,
-  lastWorkoutWeight,
-  workoutLink,
-}: dayWorkouts): ReactElement {
-  // const [formData, setFormData] = useState<dayWorkouts>({
-  //   title: title,
-  //   reps: reps,
-  //   lastWorkoutWeight: lastWorkoutweight,
-  //   workoutLink: workoutLink,
-  // });
-  // const [workOutData, setWorkoutData] = useState<number>(0);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  // const [workoutCompleted, setWorkoutCompleted] = useState<boolean>(false);
-
-  const submitAddWorkout = async () => {
-    if (5 === 0) {
-      return; // didn't fill out form
-    }
-    const val = AsyncStorage.getItem(title); // individual workout data
-    const newWorkoutData: individualWorkout = {
-      date: new Date().toISOString(),
-      num: 5,
-    };
-    if (val === null) {
-      AsyncStorage.setItem(title, JSON.stringify([newWorkoutData]));
-    } else {
-      const jsonVal: individualWorkout[] = JSON.parse(String(val));
-      jsonVal.push(newWorkoutData);
-      AsyncStorage.setItem(title, JSON.stringify(jsonVal));
-    }
-    // setModalOpen(false);
-    // setWorkoutCompleted(true);
-    //call re render for parent
-  };
+  workout,
+  getWorkoutData,
+}: {
+  workout: workout;
+  getWorkoutData: Function;
+}): JSX.Element {
+  const { name, reps, lastWorkoutWeight, workoutLink, notes, type } = workout;
+  const [logModalIsOpen, setLogModalIsOpen] = useState<boolean>(false);
+  const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
+  const tapCount = useRef(0);
+  const isBrowserOpen = useRef(false);
+  const timer = useRef<NodeJS.Timeout>();
 
   return (
     <>
       <Pressable
         style={{
-          borderColor: "black",
+          borderColor: "gray",
           borderWidth: 5,
-          borderRadius: 5,
+          borderRadius: 15,
           width: "80%",
           alignContent: "center",
           alignItems: "center",
+          marginTop: 10,
+          // height: 120,
         }}
-        // onPress={() => setModalOpen(true)}
-        key={title}
+        onLongPress={() => {
+          setAlertIsOpen(true);
+        }}
+        onPress={() => {
+          tapCount.current++;
+          if (tapCount.current === 2) {
+            clearTimeout(timer.current as NodeJS.Timeout);
+            tapCount.current = 0;
+            if (
+              workoutLink !== null &&
+              workoutLink !== "" &&
+              isBrowserOpen.current === false
+            ) {
+              isBrowserOpen.current = true;
+              try {
+                // console.log(workoutLink);
+                WebBrowser.openBrowserAsync(workoutLink)
+                  .then((value) => (isBrowserOpen.current = false))
+                  .finally(() => {
+                    if (Platform.OS === "ios") {
+                      WebBrowser.dismissBrowser();
+                    }
+                  });
+              } catch (e) {
+                if (Platform.OS === "ios") {
+                  WebBrowser.dismissBrowser();
+                }
+              }
+            }
+          } else {
+            timer.current = setTimeout(() => {
+              tapCount.current = 0;
+              setLogModalIsOpen(true);
+            }, 500);
+          }
+        }}
       >
-        <Text>{title}</Text>
-        <Text>Reps: {reps}</Text>
-        <Text>Last workout weight: {lastWorkoutWeight}</Text>
-        <Text>Link: {workoutLink}</Text>
+        <Text style={{ fontSize: 25, color: "black" }}>{name}</Text>
+        <Text style={{}}>{reps}</Text>
+        {lastWorkoutWeight !== null && (
+          <Text>Last workout: {lastWorkoutWeight}</Text>
+        )}
+        {notes !== null && notes !== "" && <Text>{notes}</Text>}
+        {workoutLink !== null && workoutLink !== "" && (
+          <Text>Double tap for link</Text>
+        )}
       </Pressable>
-      {/* <Modal
-        avoidKeyboard
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          // setFormData({ title: "", reps: "", workoutLink: null });
-        }}
-      >
-        <Modal.Content>
-          <Modal.CloseButton></Modal.CloseButton>
-          <Modal.Header>Add Workout</Modal.Header>
-          <Modal.Body>
-            <FormControl>
-              <FormControl.Label>Current Workout Weight</FormControl.Label>
-              <Input
-                type="number"
-                onChange={(value) => console.log(value)}
-              ></Input>
-            </FormControl>
-            <Button onPress={submitAddWorkout}>Submit</Button>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal> */}
+      <DeleteWorkoutAlertDialog
+        name={name}
+        setAlertIsOpen={setAlertIsOpen}
+        alertIsOpen={alertIsOpen}
+        getWorkoutData={getWorkoutData}
+      ></DeleteWorkoutAlertDialog>
+      <LogWorkoutModal
+        name={name}
+        logModalIsOpen={logModalIsOpen}
+        setLogModalIsOpen={setLogModalIsOpen}
+        getWorkoutData={getWorkoutData}
+      ></LogWorkoutModal>
     </>
   );
 }
