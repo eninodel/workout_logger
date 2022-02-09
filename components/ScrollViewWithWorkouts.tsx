@@ -5,20 +5,13 @@ import { workout } from "../Interfaces";
 
 export default function ScrollViewWithWorkouts({
   workouts,
-  getWorkoutData,
 }: {
   workouts: workout[];
-  getWorkoutData: Function;
 }): JSX.Element {
-  // console.log(workouts);
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      {workouts.map((w) => (
-        <Workout
-          workout={w}
-          getWorkoutData={getWorkoutData}
-          key={w.name}
-        ></Workout>
+      {workouts.map((w, idx) => (
+        <Workout delay={idx} workout={w} key={idx}></Workout>
       ))}
     </ScrollView>
   );

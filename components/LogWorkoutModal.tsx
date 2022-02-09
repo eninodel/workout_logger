@@ -6,41 +6,24 @@ import {
   NumberInput,
   NumberInputField,
 } from "native-base";
-import * as SQLite from "expo-sqlite";
-
-const db = SQLite.openDatabase("workouts.db");
+import { useAppDispatch } from "../hooks";
+import { updateLastWorkoutWeight } from "../workoutSlice";
+import { updateAppState } from "../appStateSlice";
+import { workout } from "../Interfaces";
 
 export default function LogWorkoutModal({
   name,
+  id,
   logModalIsOpen,
   setLogModalIsOpen,
-  getWorkoutData,
 }: {
   name: string;
+  id: number;
   logModalIsOpen: boolean;
   setLogModalIsOpen: Function;
-  getWorkoutData: Function;
 }) {
   const [weight, setWeight] = useState<number>(0);
-
-  // Logs data about a workout into the database
-  const logWorkoutData = () => {
-    const sql: string = `INSERT INTO workout_data(WORKOUT, DATE, VALUE) VALUES(?,?,?);`;
-    db.transaction(
-      (tx) =>
-        tx.executeSql(
-          sql,
-          [name, new Date().toISOString(), weight],
-          (tx, resultSet) => {
-            console.log("logWorkoutdata success!");
-          }
-        ),
-      (e) => console.log("error in logWorkoutData: " + e.message),
-      () => {
-        getWorkoutData();
-      }
-    );
-  };
+  const dispatch = useAppDispatch();
 
   return (
     <Modal
@@ -52,7 +35,7 @@ export default function LogWorkoutModal({
     >
       <Modal.Content>
         <Modal.CloseButton></Modal.CloseButton>
-        <Modal.Header>Log Workout Value</Modal.Header>
+        <Modal.Header>Log Workout Value for {name}</Modal.Header>
         <Modal.Body>
           <FormControl>
             <FormControl.Label>Weight,Minutes,etc.</FormControl.Label>
@@ -73,7 +56,29 @@ export default function LogWorkoutModal({
               if (weight === 0) {
                 return;
               }
-              logWorkoutData();
+              dispatch(
+                updateLastWorkoutWeight({
+                  id: id,
+                  weight: weight,
+                })
+              );
+              const pseudoWorkout: workout = {
+                name: "",
+                reps: "",
+                lastWorkoutWeight: weight,
+                notes: "",
+                workoutLink: "",
+                id: id,
+                type: "",
+              };
+              dispatch(
+                updateAppState({
+                  workoutId: id,
+                  workout: pseudoWorkout,
+                  day: null,
+                  appState: "LOG_WORKOUT",
+                })
+              );
               setLogModalIsOpen(false);
             }}
           >

@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { Modal, Input, Button, FormControl, Radio } from "native-base";
+import { Modal, Input, Button, FormControl, Radio, TextArea } from "native-base";
 import { workout } from "../Interfaces";
+import { useAppDispatch } from "../hooks";
+import { updateWorkout } from "../workoutSlice";
+import { updateAppState } from "../appStateSlice";
+import { updateWorkoutErrorsState } from "../workoutErrorsSlice";
 
 const initialData: workout = {
+  id: 0,
   name: "",
   workoutLink: "",
   lastWorkoutWeight: null,
@@ -11,21 +16,30 @@ const initialData: workout = {
   type: "WEIGHT",
 };
 
-export default function AddWorkoutModal({
-  addWorkout,
+type radioDataType = "WEIGHT" | "CARDIO" | "OTHER";
+
+export default function AddandEditWorkoutModal({
+  day,
   setModalIsOpen,
   modalIsOpen,
+  workout,
 }: {
-  addWorkout: Function;
+  day: string;
   setModalIsOpen: Function;
   modalIsOpen: boolean;
+  workout: workout | null;
 }): JSX.Element {
-  const [formData, setFormData] = useState<workout>(initialData);
+  const dispatch = useAppDispatch();
+  const [formData, setFormData] = useState<workout>(workout || initialData);
+  const [radioData, setRadioData] = useState<radioDataType>("WEIGHT");
 
   return (
     <Modal
       onClose={() => {
-        setFormData(initialData);
+        if (workout === null) {
+          setFormData(initialData);
+          setRadioData("WEIGHT");
+        }
         setModalIsOpen(false);
       }}
       isOpen={modalIsOpen}
@@ -33,25 +47,28 @@ export default function AddWorkoutModal({
     >
       <Modal.Content>
         <Modal.CloseButton></Modal.CloseButton>
-        <Modal.Header>Add a Workout</Modal.Header>
+        <Modal.Header>{workout? "Edit " + workout.name: "Add a workout"}</Modal.Header>
         <Modal.Body>
           <FormControl>
             <FormControl.Label>Workout Name</FormControl.Label>
             <Input
+              value={formData.name}
               onChangeText={(text) => {
                 setFormData({ ...formData, name: text });
               }}
             ></Input>
             <FormControl.Label>Workout Reps</FormControl.Label>
             <Input
+              value={formData.reps}
               onChangeText={(text) => {
                 setFormData({ ...formData, reps: text });
               }}
             ></Input>
             <FormControl.Label>Workout Example Link (Opt.)</FormControl.Label>
             <Input
+              value={formData.workoutLink || ""}
               onChangeText={(text) => {
-                if (text === "" || text === null) {
+                if (text === null) {
                   setFormData({ ...formData, workoutLink: "" });
                 } else {
                   setFormData({ ...formData, workoutLink: text });
@@ -59,21 +76,22 @@ export default function AddWorkoutModal({
               }}
             ></Input>
             <FormControl.Label>Workout Notes (Opt.)</FormControl.Label>
-            <Input
+            <TextArea
+              value={formData.notes || ""}
               onChangeText={(text) => {
-                if (text === "" || text === null) {
+                if (text === null) {
                   setFormData({ ...formData, notes: "" });
                 } else {
                   setFormData({ ...formData, notes: text });
                 }
               }}
-            ></Input>
+            ></TextArea>
             <Radio.Group
               name="workout type"
-              value={formData.type}
-              onChange={(nextValue) =>
-                setFormData({ ...formData, type: nextValue })
-              }
+              value={radioData}
+              onChange={(nextValue) => {
+                setRadioData(nextValue as radioDataType);
+              }}
             >
               <Radio value="WEIGHT">Weight</Radio>
               <Radio value="CARDIO">Cardio</Radio>
@@ -83,15 +101,59 @@ export default function AddWorkoutModal({
           <Button
             size={70}
             width="full"
+            marginTop={5}
             onPress={() => {
-              addWorkout(
-                formData.name.trim(),
-                formData.reps.trim(),
-                formData.notes?.trim(),
-                formData.workoutLink?.trim(),
-                formData.type
-              );
+              const finalFormData: workout = {
+                id: 0,
+                lastWorkoutWeight: null,
+                name: formData.name.trim(),
+                notes: formData.notes?.trim() || null,
+                workoutLink: formData.workoutLink?.trim() || null,
+                reps: formData.reps.trim(),
+                type: radioData,
+              };
+              if (finalFormData.name === "" || finalFormData.reps === "") {
+                setModalIsOpen(false); // basic form validation
+                // dispatch(updateWorkoutErrorsState({
+                //   errorState: "NO_REPS_OR_TITLE"
+                // }))
+                return;
+              }
+              if (workout) {
+                dispatch(
+                  updateWorkout({
+                    id: workout.id,
+                    workout: { ...finalFormData },
+                  })
+                );
+                dispatch(
+                  updateAppState({
+                    workoutId: workout.id,
+                    day: null,
+                    workout: { ...finalFormData },
+                    appState: "UPDATE_WORKOUT",
+                  })
+                );
+              } else {
+                // TODO:
+                // Have working add new workout function
+                console.log("here in addWorkoutModal");
+                dispatch(
+                  updateAppState({
+                    workoutId: null,
+                    day: day,
+                    workout: { ...finalFormData },
+                    appState: "ADD_WORKOUT",
+                  })
+                );
+              }
               setModalIsOpen(false);
+              if (workout) {
+                setFormData({ ...finalFormData });
+              } else {
+                setFormData(initialData);
+              }
+              setRadioData("WEIGHT");
             }}
           >
             Submit
