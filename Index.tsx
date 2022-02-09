@@ -20,7 +20,6 @@ createInitialTables.forEach((sql) => {
   db.transaction(
     (tx) =>
       tx.executeSql(sql, [], (tx, resultSet) => {
-        // console.log(resultSet.rows._array);
       }),
     (e) => console.log("error in app.tx with sql: " + e.message)
   );
@@ -66,8 +65,6 @@ export default function Index() {
       }
     }
   })
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     getWorkouts(db, setIsLoading, dispatch);

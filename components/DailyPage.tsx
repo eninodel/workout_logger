@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import { Button, Text, Center, Alert, Collapse, IconButton, CloseIcon } from "native-base";
+import { Button, Text, Center} from "native-base";
 import ScrollViewWithWorkouts from "./ScrollViewWithWorkouts";
 import AddWorkoutModal from "./AddWorkoutModal";
 import { workout } from "../Interfaces";
@@ -13,8 +13,6 @@ export default function DailyPage({ route, navigation }): JSX.Element {
     (state) => state.workoutsReducer.daysToWorkouts[day]
   );
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  // const error = useAppSelector(state => state.workoutErrorsReducer.errorState);
-  // const [isWorkoutAlertVisible, setIsWorkoutAlertVisible] = useState<boolean>(true);
 
   if (day === "SA") console.log(workouts)
   return (

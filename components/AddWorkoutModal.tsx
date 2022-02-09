@@ -4,7 +4,6 @@ import { workout } from "../Interfaces";
 import { useAppDispatch } from "../hooks";
 import { updateWorkout } from "../workoutSlice";
 import { updateAppState } from "../appStateSlice";
-import { updateWorkoutErrorsState } from "../workoutErrorsSlice";
 
 const initialData: workout = {
   id: 0,
@@ -114,9 +113,6 @@ export default function AddandEditWorkoutModal({
               };
               if (finalFormData.name === "" || finalFormData.reps === "") {
                 setModalIsOpen(false); // basic form validation
-                // dispatch(updateWorkoutErrorsState({
-                //   errorState: "NO_REPS_OR_TITLE"
-                // }))
                 return;
               }
               if (workout) {
@@ -135,9 +131,6 @@ export default function AddandEditWorkoutModal({
                   })
                 );
               } else {
-                // TODO:
-                // Have working add new workout function
-                console.log("here in addWorkoutModal");
                 dispatch(
                   updateAppState({
                     workoutId: null,

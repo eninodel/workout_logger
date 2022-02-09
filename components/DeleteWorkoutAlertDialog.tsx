@@ -1,18 +1,14 @@
 import React, { useRef } from "react";
 import { AlertDialog, Button } from "native-base";
-import * as SQLite from "expo-sqlite";
 import { useAppDispatch } from "../hooks";
 import { deleteWorkout } from "../workoutSlice";
 import { updateAppState } from "../appStateSlice";
-import Animated, { runOnUI } from "react-native-reanimated";
 
 export default function DeleteWorkoutAlertDialog({
-  updateAnimationValue,
   workoutId,
   setIsDeleteOpen,
   isDeleteOpen,
 }: {
-  updateAnimationValue: Function;
   workoutId: number;
   setIsDeleteOpen: Function;
   isDeleteOpen: boolean;

@@ -12,12 +12,7 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
   withDelay,
-  runOnJS,
-  runOnUI,
 } from "react-native-reanimated";
-import { useAppDispatch } from "../hooks";
-import { deleteWorkout } from "../workoutSlice";
-import { updateAppState } from "../appStateSlice";
 
 export default function Workout({
   delay,
@@ -35,7 +30,6 @@ export default function Workout({
   const tapCount = useRef(0);
   const isBrowserOpen = useRef(false);
   const timer = useRef<NodeJS.Timeout>();
-  const dispatch = useAppDispatch();
   const workoutIdToBeDeleted = useRef<number>(-1);
 
   const editWorkoutPlaceholder: workout = {
@@ -62,38 +56,7 @@ export default function Workout({
     opacityValue.value = 0;
   };
 
-  function deleteWorkoutDispatch() {
-    // 'worklet';
-    // console.log("here in delete for " + workout.name)
-    dispatch(deleteWorkout(workoutIdToBeDeleted.current));
-    dispatch(
-      updateAppState({
-        workoutId: workoutIdToBeDeleted.current,
-        workout: null,
-        day: null,
-        appState: "DELETE_WORKOUT",
-      })
-    );
-  }
-
-  // withDelay(200,withTiming(0, {duration:3000}, (isFinished) => {
-  //   if (isFinished){
-  //     runOnJS(deleteWorkoutDispatch)();
-  //   }
-  // }))
-
   const style = useAnimatedStyle(() => {
-    if (workoutIdToBeDeleted.current !== -1) {
-
-      return {
-        transform:[{translateX:  withDelay(50,withTiming(500, {duration:1000}, (isFinished) => {
-          if (isFinished){
-            runOnJS(deleteWorkoutDispatch)();
-          }
-        }))}]
-      };
-    }else{
-
       return {
         transform: [
           {
@@ -101,9 +64,7 @@ export default function Workout({
           },
         ],
       };
-    }
-  }
-  , [workoutIdToBeDeleted.current]);
+    });
 
   return (
     <>
@@ -130,7 +91,6 @@ export default function Workout({
               ) {
                 isBrowserOpen.current = true;
                 try {
-                  // console.log(workoutLink);
                   WebBrowser.openBrowserAsync(workoutLink)
                     .then((value) => (isBrowserOpen.current = false))
                     .finally(() => {
@@ -186,7 +146,6 @@ export default function Workout({
         modalIsOpen={isEditOpen}
       ></AddandEditWorkoutModal>
       <DeleteWorkoutAlertDialog
-        updateAnimationValue={updateOpacity}
         workoutId={id}
         setIsDeleteOpen={setIsDeleteOpen}
         isDeleteOpen={isDeleteOpen}
