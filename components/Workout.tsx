@@ -70,12 +70,6 @@ export default function Workout({
     <>
       <Animated.View style={style}>
         <Pressable
-          padding={5}
-          width={300}
-          backgroundColor={"white"}
-          borderRadius={15}
-          marginTop={15}
-          shadow={10}
           onLongPress={() => {
             setIsEditDelOpen(true);
           }}
@@ -112,19 +106,36 @@ export default function Workout({
             }
           }}
         >
+        {({isPressed, isFocused, isHovered}) => 
+        {
+          return <Box          
+          padding={5}
+          width={300}
+          backgroundColor={"white"}
+          borderRadius={15}
+          marginTop={15}
+          shadow={10} 
+          style = {{
+            transform: [{
+              scale: isPressed? 0.93: 1.00
+            }]
+          }}
+          >
           <Text bold fontSize={"lg"} variant={"workout"}>
             {name}
           </Text>
           <Text variant={"workout"}>Reps: {reps}</Text>
           {lastWorkoutWeight !== null && (
             <Text variant={"workout"}>Last workout: {lastWorkoutWeight} lbs</Text>
-          )}
+            )}
           {notes !== null && notes !== "" && notes !== "null" && (
             <Text variant={"workout"}>Note: {notes}</Text>
-          )}
+            )}
           {workoutLink !== null &&
             workoutLink !== "" &&
             workoutLink !== "null" && <Text variant={"workout"}>Double tap for link</Text>}
+            </Box>
+          }}
         </Pressable>
       </Animated.View>
       <EditAndDeleteModal
