@@ -51,21 +51,21 @@ export default function AddandEditWorkoutModal({
           <FormControl>
             <FormControl.Label>Workout Name</FormControl.Label>
             <Input
-              value={formData.name}
+              defaultValue={formData.name}
               onChangeText={(text) => {
                 setFormData({ ...formData, name: text });
               }}
             ></Input>
             <FormControl.Label>Workout Reps</FormControl.Label>
             <Input
-              value={formData.reps}
+              defaultValue={formData.reps}
               onChangeText={(text) => {
                 setFormData({ ...formData, reps: text });
               }}
             ></Input>
             <FormControl.Label>Workout Example Link (Opt.)</FormControl.Label>
             <Input
-              value={formData.workoutLink || ""}
+              defaultValue={formData.workoutLink || ""}
               onChangeText={(text) => {
                 if (text === null) {
                   setFormData({ ...formData, workoutLink: "" });
@@ -76,7 +76,7 @@ export default function AddandEditWorkoutModal({
             ></Input>
             <FormControl.Label>Workout Notes (Opt.)</FormControl.Label>
             <TextArea
-              value={formData.notes || ""}
+              defaultValue={formData.notes || ""}
               onChangeText={(text) => {
                 if (text === null) {
                   setFormData({ ...formData, notes: "" });

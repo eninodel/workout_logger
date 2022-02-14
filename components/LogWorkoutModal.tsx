@@ -44,7 +44,7 @@ export default function LogWorkoutModal({
                 size={70}
                 width="full"
                 marginBottom={10}
-                value={String(weight)}
+                defaultValue={String(weight)}
                 onChange={(val) => setWeight(Number(val.nativeEvent.text))}
               />
             </NumberInput>
