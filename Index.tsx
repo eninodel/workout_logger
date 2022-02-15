@@ -62,6 +62,10 @@ export default function Index() {
           },
           workout: {
             color: mainBackgroundColor
+          },
+          error: {
+            color: "rgb(255, 15, 63)",
+            fontSize:10
           }
         },
       },

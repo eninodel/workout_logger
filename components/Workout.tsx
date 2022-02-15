@@ -124,9 +124,9 @@ export default function Workout({
           <Text bold fontSize={"lg"} variant={"workout"}>
             {name}
           </Text>
-          <Text variant={"workout"}>Reps: {reps}</Text>
+          <Text variant={"workout"}>Reps/plan: {reps}</Text>
           {lastWorkoutWeight !== null && (
-            <Text variant={"workout"}>Last workout: {lastWorkoutWeight} lbs</Text>
+            <Text variant={"workout"}>Last workout: {lastWorkoutWeight} {type === "WEIGHT" ? "lbs" : type === "CARDIO" ? "minutes": ""}</Text>
             )}
           {notes !== null && notes !== "" && notes !== "null" && (
             <Text variant={"workout"}>Note: {notes}</Text>

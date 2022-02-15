@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Input, Button, FormControl, Radio, TextArea } from "native-base";
+import { Modal, Input, Button, FormControl, Radio, TextArea, Text } from "native-base";
 import { workout } from "../Interfaces";
 import { useAppDispatch } from "../hooks";
 import { updateWorkout } from "../workoutSlice";
@@ -31,6 +31,7 @@ export default function AddandEditWorkoutModal({
   const dispatch = useAppDispatch();
   const [formData, setFormData] = useState<workout>(workout || initialData);
   const [radioData, setRadioData] = useState<radioDataType>("WEIGHT");
+  const [isInvalid, setIsInvalid] = useState<boolean>(false);
 
   return (
     <Modal
@@ -38,7 +39,11 @@ export default function AddandEditWorkoutModal({
         if (workout === null) {
           setFormData(initialData);
           setRadioData("WEIGHT");
+        } else {
+          setFormData(workout);
+          setRadioData(workout.type as radioDataType)
         }
+        setIsInvalid(false)
         setModalIsOpen(false);
       }}
       isOpen={modalIsOpen}
@@ -53,16 +58,24 @@ export default function AddandEditWorkoutModal({
             <Input
               defaultValue={formData.name}
               onChangeText={(text) => {
+                if (isInvalid){
+                  setIsInvalid(false)
+                }
                 setFormData({ ...formData, name: text });
               }}
-            ></Input>
-            <FormControl.Label>Workout Reps</FormControl.Label>
+              ></Input>
+            {isInvalid && <FormControl.HelperText><Text variant={"error"}>A workout must have a name</Text></FormControl.HelperText>}
+            <FormControl.Label>Workout Reps/Plan</FormControl.Label>
             <Input
               defaultValue={formData.reps}
               onChangeText={(text) => {
+                if (isInvalid){
+                  setIsInvalid(false)
+                }
                 setFormData({ ...formData, reps: text });
               }}
             ></Input>
+            {isInvalid && <FormControl.HelperText><Text variant={"error"}>A workout must have associated reps or workout plan</Text></FormControl.HelperText> }
             <FormControl.Label>Workout Example Link (Opt.)</FormControl.Label>
             <Input
               defaultValue={formData.workoutLink || ""}
@@ -112,9 +125,11 @@ export default function AddandEditWorkoutModal({
                 type: radioData,
               };
               if (finalFormData.name === "" || finalFormData.reps === "") {
-                setModalIsOpen(false); // basic form validation
+                 // basic form validation
+                setIsInvalid(true)
                 return;
               }
+              setModalIsOpen(false)
               if (workout) {
                 dispatch(
                   updateWorkout({
@@ -146,6 +161,7 @@ export default function AddandEditWorkoutModal({
               } else {
                 setFormData(initialData);
               }
+              setIsInvalid(false)
               setRadioData("WEIGHT");
             }}
           >

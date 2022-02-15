@@ -5,6 +5,7 @@ import {
   FormControl,
   NumberInput,
   NumberInputField,
+  Text
 } from "native-base";
 import { useAppDispatch } from "../hooks";
 import { updateLastWorkoutWeight } from "../workoutSlice";
@@ -23,12 +24,14 @@ export default function LogWorkoutModal({
   setLogModalIsOpen: Function;
 }) {
   const [weight, setWeight] = useState<number>(0);
+  const [isInvalid, setIsInvalid] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   return (
     <Modal
       onClose={() => {
         setWeight(0);
+        setIsInvalid(false)
         setLogModalIsOpen(false);
       }}
       isOpen={logModalIsOpen}
@@ -39,13 +42,19 @@ export default function LogWorkoutModal({
         <Modal.Body>
           <FormControl>
             <FormControl.Label>Weight,Minutes,etc.</FormControl.Label>
+              {isInvalid && <FormControl.HelperText><Text variant="error">Weight/value must be greater than 0</Text></FormControl.HelperText>}
             <NumberInput>
               <NumberInputField
                 size={70}
                 width="full"
                 marginBottom={10}
                 defaultValue={String(weight)}
-                onChange={(val) => setWeight(Number(val.nativeEvent.text))}
+                onChange={(val) => {
+                  if (isInvalid){
+                    setIsInvalid(false)
+                  }
+                  setWeight(Number(val.nativeEvent.text))
+                }}
               />
             </NumberInput>
           </FormControl>
@@ -54,6 +63,7 @@ export default function LogWorkoutModal({
             width="full"
             onPress={() => {
               if (weight === 0) {
+                setIsInvalid(true)
                 return;
               }
               dispatch(
@@ -79,6 +89,7 @@ export default function LogWorkoutModal({
                   appState: "LOG_WORKOUT",
                 })
               );
+              setIsInvalid(false)
               setLogModalIsOpen(false);
             }}
           >
