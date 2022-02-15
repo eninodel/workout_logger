@@ -5,7 +5,7 @@ export interface appStateSlice {
   workoutId: number | null;
   workout: workout | null;
   day: string | null;
-  appState: "UPDATE_WORKOUT" | "DELETE_WORKOUT" | "ADD_WORKOUT" | "LOG_WORKOUT";
+  appState: "UPDATE_WORKOUT" | "DELETE_WORKOUT" | "ADD_WORKOUT" | "LOG_WORKOUT" | "HIDE_INSTRUCTIONS";
 }
 
 const initialState: appStateSlice = {

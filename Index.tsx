@@ -6,27 +6,39 @@ import DailyPage from "./components/DailyPage";
 import { NativeBaseProvider, extendTheme } from "native-base";
 import { SSRProvider } from "@react-aria/ssr";
 import * as SQLite from "expo-sqlite";
-import { createInitialTables } from "./SQLStatements";
+import { createInitialTables, exampleWorkout, insertExampleWorkout } from "./SQLStatements";
 import { useAppDispatch } from "./hooks";
-import { getWorkouts } from "./SQLHelpers";
+import { getWorkouts} from "./SQLHelpers";
 import AppLoading from "expo-app-loading";
 import DatabaseCaller from "./components/DatabaseCaller";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import InstructionsModal from "./components/InstructionsModal";
 
 
 const db = SQLite.openDatabase("workouts.db");
 
-// Executes default sql statements at app start up
-createInitialTables.forEach((sql) => {
-  db.transaction(
-    (tx) =>
-      tx.executeSql(sql, [], (tx, resultSet) => {
-      }),
-    (e) => console.log("error in app.tx with sql: " + e.message)
-  );
-});
+const firstAppStartup = async (): Promise<boolean> => {
+  // await AsyncStorage.removeItem("FIRST_STARTUP");
+  try {
+    const value = await AsyncStorage.getItem('FIRST_STARTUP')
+    if(value !== null) {
+      // not first startup
+      return false;
+    } else{
+      // first startup
+      await AsyncStorage.setItem("FIRST_STARTUP", "false")
+      return true;
+    }
+  } catch(e) {
+    // error reading value
+  }
+
+  return false;
+}
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [show, setShow] = useState<boolean>(true);
   const dispatch = useAppDispatch();
   const mainBackgroundColor  = 'rgb(45, 45, 45)';
 
@@ -65,9 +77,35 @@ export default function Index() {
       }
     }
   })
+  
+  const appStartup = async()=>{
+    if (await firstAppStartup() === true){
+      await Promise.all(createInitialTables.map(async (sql)=>{
+        return new Promise((res, rej) => {
+          db.transaction(
+            (tx) =>
+              tx.executeSql(sql, [], (tx, resultSet) => {
+                // console.log(resultSet.rows._array)
+                res("success")
+              }),
+            (e) => console.log("error in app.tx with sql: "+ sql + e.message)
+          );
+        })
+      }));
+      await db.transaction((tx) => {
+        tx.executeSql(exampleWorkout,[],(tx, resultSet) => {
+
+        })
+      },(e) => console.log("error in adding example workout: " + e.message))
+      await db.transaction((tx) => {
+        tx.executeSql(insertExampleWorkout)
+      }, (e) => console.log("error in inserting example workout to days: " + e.message))
+    }
+    getWorkouts(db, setIsLoading, dispatch);
+  }
 
   useEffect(() => {
-    getWorkouts(db, setIsLoading, dispatch);
+    appStartup();
   });
 
   const Tab = createMaterialTopTabNavigator();
@@ -88,45 +126,47 @@ export default function Index() {
       <NativeBaseProvider theme = {nativeBaseTheme}>
         <DatabaseCaller db={db}>
           <SafeAreaView style={{ flex: 1, backgroundColor:mainBackgroundColor }}>
-            <NavigationContainer theme={navigationTheme}>
-              <Tab.Navigator initialRouteName={getCurrentDay()}>
-                <Tab.Screen
-                  name="S"
-                  component={DailyPage}
-                  initialParams={{ day: "S" }}
-                />
-                <Tab.Screen
-                  name="M"
-                  component={DailyPage}
-                  initialParams={{ day: "M" }}
-                />
-                <Tab.Screen
-                  name="T"
-                  component={DailyPage}
-                  initialParams={{ day: "T" }}
-                />
-                <Tab.Screen
-                  name="W"
-                  component={DailyPage}
-                  initialParams={{ day: "W" }}
-                />
-                <Tab.Screen
-                  name="TH"
-                  component={DailyPage}
-                  initialParams={{ day: "TH" }}
-                />
-                <Tab.Screen
-                  name="F"
-                  component={DailyPage}
-                  initialParams={{ day: "F" }}
-                />
-                <Tab.Screen
-                  name="SA"
-                  component={DailyPage}
-                  initialParams={{ day: "SA" }}
-                />
-              </Tab.Navigator>
-            </NavigationContainer>
+            <InstructionsModal show={show} setShow={setShow}>
+              <NavigationContainer theme={navigationTheme}>
+                <Tab.Navigator initialRouteName={getCurrentDay()}>
+                  <Tab.Screen
+                    name="S"
+                    component={DailyPage}
+                    initialParams={{ day: "S" }}
+                  />
+                  <Tab.Screen
+                    name="M"
+                    component={DailyPage}
+                    initialParams={{ day: "M" }}
+                  />
+                  <Tab.Screen
+                    name="T"
+                    component={DailyPage}
+                    initialParams={{ day: "T" }}
+                  />
+                  <Tab.Screen
+                    name="W"
+                    component={DailyPage}
+                    initialParams={{ day: "W" }}
+                  />
+                  <Tab.Screen
+                    name="TH"
+                    component={DailyPage}
+                    initialParams={{ day: "TH" }}
+                  />
+                  <Tab.Screen
+                    name="F"
+                    component={DailyPage}
+                    initialParams={{ day: "F" }}
+                  />
+                  <Tab.Screen
+                    name="SA"
+                    component={DailyPage}
+                    initialParams={{ day: "SA" }}
+                  />
+                  </Tab.Navigator>
+                </NavigationContainer>
+              </InstructionsModal>
           </SafeAreaView>
         </DatabaseCaller>
       </NativeBaseProvider>

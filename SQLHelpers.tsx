@@ -7,6 +7,7 @@ import {
 } from "./workoutSlice";
 import { Dispatch, AnyAction } from "@reduxjs/toolkit";
 
+
 export const getWorkouts = (
   db: SQLite.WebSQLDatabase,
   setIsLoading: Function,
@@ -30,7 +31,7 @@ export const getWorkouts = (
           daysToWorkoutStrings[specificDay].push(specificWorkout);
         });
       }),
-    (e) => console.log("error in getWorkoutsForEachDay"),
+    (e) => console.log("error in getWorkoutsForEachDay: " + e.message),
     () => {
       getAllWorkouts(db, setIsLoading, daysToWorkoutStrings, dispatch);
     }
@@ -96,7 +97,7 @@ const getLastWorkoutWeight = async (
               [w.id],
               (tx, resultSet) => {
                 const arr = resultSet.rows._array;
-                console.log(arr);
+                // console.log(arr);
                 if (arr.length !== 0) {
                   res({ ...w, lastWorkoutWeight: arr[0]["VALUE"] });
                 } else {
