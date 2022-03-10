@@ -1,6 +1,6 @@
 # workout_logger
-Simple react native app to log my workouts
-
+Simple react native app to log my workouts.
+Download here: https://expo.dev/@enino/workout_logger
 ***
 
 https://user-images.githubusercontent.com/71790814/153269466-475b8986-9550-4da0-a686-d747808b72d6.mp4
