@@ -46,10 +46,10 @@ export default function Index() {
     ...DefaultTheme,
     colors:{
       ...DefaultTheme.colors,
-      primary: 'rgb(35, 45, 85)',
+      primary: "rgb(255,255,255)",
       background: mainBackgroundColor,
       card: mainBackgroundColor,
-      text: "rgb(255,255,255)"
+      text: "rgb(255,255,255)",
     }
   }
 

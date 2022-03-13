@@ -17,7 +17,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "io.expo.wor"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,6 +29,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "A simple workout logging app"
+    "description": "A simple workout logging app. To use first download Expo Go from the App Store or Google Play store then scan this QR code with your phone camera!"
   }
 }
