@@ -1,13 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import workoutSlice from "./workoutSlice";
-import appStateSlice from "./appStateSlice";
-import workoutErrorsSlice from "./workoutErrorsSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import workoutSlice from './workoutSlice';
+import appStateSlice from './appStateSlice';
+import workoutErrorsSlice from './workoutErrorsSlice';
 
 export const store = configureStore({
   reducer: {
     workoutsReducer: workoutSlice,
     appStateReducer: appStateSlice,
-    workoutErrorsReducer: workoutErrorsSlice
+    workoutErrorsReducer: workoutErrorsSlice,
   },
 });
 

@@ -1,29 +1,23 @@
-import React, { useState} from "react";
-import { Button, Text, Center} from "native-base";
-import ScrollViewWithWorkouts from "./ScrollViewWithWorkouts";
-import AddWorkoutModal from "./AddWorkoutModal";
-import { workout } from "../Interfaces";
-import { useAppSelector } from "../hooks";
-
+import React, { useState } from 'react';
+import { Button, Text, Center } from 'native-base';
+import ScrollViewWithWorkouts from './ScrollViewWithWorkouts';
+import AddWorkoutModal from './AddWorkoutModal';
+import { workout } from '../utils/Interfaces';
+import { useAppSelector } from '../redux/hooks';
 
 // TODO: add typing for route and navigation
 export default function DailyPage({ route, navigation }): JSX.Element {
   const { day }: { day: string } = route.params;
-  const workouts: workout[] = useAppSelector(
-    (state) => state.workoutsReducer.daysToWorkouts[day]
-  );
+  const workouts: workout[] = useAppSelector(state => state.workoutsReducer.daysToWorkouts[day]);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-  if (day === "SA") console.log(workouts)
   return (
     <>
       {workouts.length > 0 ? (
         <ScrollViewWithWorkouts workouts={workouts}></ScrollViewWithWorkouts>
       ) : (
         <Center flex={1}>
-          <Text variant={"noWorkouts"}>
-            No workouts added! Click "+" at the bottom to add workouts!
-          </Text>
+          <Text variant={'noWorkouts'}>No workouts added! Click "+" at the bottom to add workouts!</Text>
         </Center>
       )}
 

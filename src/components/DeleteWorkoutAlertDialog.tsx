@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
-import { AlertDialog, Button } from "native-base";
-import { useAppDispatch } from "../hooks";
-import { deleteWorkout } from "../workoutSlice";
-import { updateAppState } from "../appStateSlice";
+import React, { useRef } from 'react';
+import { AlertDialog, Button } from 'native-base';
+import { useAppDispatch } from '../redux/hooks';
+import { deleteWorkout } from '../redux/workoutSlice';
+import { updateAppState } from '../redux/appStateSlice';
 
 export default function DeleteWorkoutAlertDialog({
   workoutId,
@@ -17,17 +17,11 @@ export default function DeleteWorkoutAlertDialog({
   const dispatch = useAppDispatch();
 
   return (
-    <AlertDialog
-      leastDestructiveRef={cancelRef}
-      isOpen={isDeleteOpen}
-      onClose={() => setIsDeleteOpen(false)}
-    >
+    <AlertDialog leastDestructiveRef={cancelRef} isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
       <AlertDialog.Content>
         <AlertDialog.CloseButton></AlertDialog.CloseButton>
         <AlertDialog.Header>Delete Workout?</AlertDialog.Header>
-        <AlertDialog.Body>
-          This will remove all related data. This action cannot be undone.
-        </AlertDialog.Body>
+        <AlertDialog.Body>This will remove all related data. This action cannot be undone.</AlertDialog.Body>
         <AlertDialog.Footer>
           <Button.Group space={2}>
             <Button
@@ -45,8 +39,8 @@ export default function DeleteWorkoutAlertDialog({
                     workoutId: workoutId,
                     workout: null,
                     day: null,
-                    appState: "DELETE_WORKOUT",
-                  })
+                    appState: 'DELETE_WORKOUT',
+                  }),
                 );
                 setIsDeleteOpen(false);
               }}

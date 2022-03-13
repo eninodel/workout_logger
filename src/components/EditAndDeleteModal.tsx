@@ -1,5 +1,5 @@
-import React from "react";
-import { Modal, Button } from "native-base";
+import React from 'react';
+import { Modal, Button } from 'native-base';
 
 export default function EditAndDeleteModal({
   isEditDelOpen,
@@ -24,7 +24,7 @@ export default function EditAndDeleteModal({
         <Modal.Header>Edit or Delete</Modal.Header>
         <Modal.Body>Edit or Delete</Modal.Body>
         <Modal.Footer>
-          <Button.Group justifyContent={"space-evenly"}>
+          <Button.Group justifyContent={'space-evenly'}>
             <Button
               onPress={() => {
                 setIsEditDelOpen(false);

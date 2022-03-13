@@ -1,22 +1,22 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { workout } from "./Interfaces";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { workout } from '../utils/Interfaces';
 
 export interface appStateSlice {
   workoutId: number | null;
   workout: workout | null;
   day: string | null;
-  appState: "UPDATE_WORKOUT" | "DELETE_WORKOUT" | "ADD_WORKOUT" | "LOG_WORKOUT" | "HIDE_INSTRUCTIONS";
+  appState: 'UPDATE_WORKOUT' | 'DELETE_WORKOUT' | 'ADD_WORKOUT' | 'LOG_WORKOUT' | 'HIDE_INSTRUCTIONS';
 }
 
 const initialState: appStateSlice = {
   workoutId: null,
   workout: null,
   day: null,
-  appState: "ADD_WORKOUT",
+  appState: 'ADD_WORKOUT',
 };
 
 export const appStateSlice = createSlice({
-  name: "appStateSlice",
+  name: 'appStateSlice',
   initialState,
   reducers: {
     updateAppState: (state, action: PayloadAction<appStateSlice>) => {

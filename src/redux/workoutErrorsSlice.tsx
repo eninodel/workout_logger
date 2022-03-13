@@ -1,19 +1,19 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface workoutErrorsSlice {
-  errorState: "NO_REPS_OR_TITLE" | "COULD_NOT_WRITE_TO_DB" | null;
+  errorState: 'NO_REPS_OR_TITLE' | 'COULD_NOT_WRITE_TO_DB' | null;
 }
 
 const initialState: workoutErrorsSlice = {
-    errorState : null
+  errorState: null,
 };
 
 export const workoutErrorsSlice = createSlice({
-  name: "workoutErrorsSlice",
+  name: 'workoutErrorsSlice',
   initialState,
   reducers: {
     updateWorkoutErrorsState: (state, action: PayloadAction<workoutErrorsSlice>) => {
-        state.errorState = action.payload.errorState
+      state.errorState = action.payload.errorState;
     },
   },
 });

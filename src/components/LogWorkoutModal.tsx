@@ -1,16 +1,9 @@
-import React, { useState } from "react";
-import {
-  Modal,
-  Button,
-  FormControl,
-  NumberInput,
-  NumberInputField,
-  Text
-} from "native-base";
-import { useAppDispatch } from "../hooks";
-import { updateLastWorkoutWeight } from "../workoutSlice";
-import { updateAppState } from "../appStateSlice";
-import { workout } from "../Interfaces";
+import React, { useState } from 'react';
+import { Modal, Button, FormControl, NumberInput, NumberInputField, Text } from 'native-base';
+import { useAppDispatch } from '../redux/hooks';
+import { updateLastWorkoutWeight } from '../redux/workoutSlice';
+import { updateAppState } from '../redux/appStateSlice';
+import { workout } from '../utils/Interfaces';
 
 export default function LogWorkoutModal({
   name,
@@ -31,7 +24,7 @@ export default function LogWorkoutModal({
     <Modal
       onClose={() => {
         setWeight(0);
-        setIsInvalid(false)
+        setIsInvalid(false);
         setLogModalIsOpen(false);
       }}
       isOpen={logModalIsOpen}
@@ -42,18 +35,22 @@ export default function LogWorkoutModal({
         <Modal.Body>
           <FormControl>
             <FormControl.Label>Weight,Minutes,etc.</FormControl.Label>
-              {isInvalid && <FormControl.HelperText><Text variant="error">Weight/value must be greater than 0</Text></FormControl.HelperText>}
+            {isInvalid && (
+              <FormControl.HelperText>
+                <Text variant="error">Weight/value must be greater than 0</Text>
+              </FormControl.HelperText>
+            )}
             <NumberInput>
               <NumberInputField
                 size={70}
                 width="full"
                 marginBottom={10}
                 defaultValue={String(weight)}
-                onChange={(val) => {
-                  if (isInvalid){
-                    setIsInvalid(false)
+                onChange={val => {
+                  if (isInvalid) {
+                    setIsInvalid(false);
                   }
-                  setWeight(Number(val.nativeEvent.text))
+                  setWeight(Number(val.nativeEvent.text));
                 }}
               />
             </NumberInput>
@@ -63,33 +60,33 @@ export default function LogWorkoutModal({
             width="full"
             onPress={() => {
               if (weight === 0) {
-                setIsInvalid(true)
+                setIsInvalid(true);
                 return;
               }
               dispatch(
                 updateLastWorkoutWeight({
                   id: id,
                   weight: weight,
-                })
+                }),
               );
               const pseudoWorkout: workout = {
-                name: "",
-                reps: "",
+                name: '',
+                reps: '',
                 lastWorkoutWeight: weight,
-                notes: "",
-                workoutLink: "",
+                notes: '',
+                workoutLink: '',
                 id: id,
-                type: "",
+                type: '',
               };
               dispatch(
                 updateAppState({
                   workoutId: id,
                   workout: pseudoWorkout,
                   day: null,
-                  appState: "LOG_WORKOUT",
-                })
+                  appState: 'LOG_WORKOUT',
+                }),
               );
-              setIsInvalid(false)
+              setIsInvalid(false);
               setLogModalIsOpen(false);
             }}
           >

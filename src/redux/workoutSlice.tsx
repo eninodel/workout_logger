@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { workout } from "./Interfaces";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { workout } from '../utils/Interfaces';
 
-const daysOfWeek: Array<string> = ["S", "M", "T", "W", "TH", "F", "SA"];
+const daysOfWeek: Array<string> = ['S', 'M', 'T', 'W', 'TH', 'F', 'SA'];
 
 export interface addWorkoutSlice {
   day: string;
@@ -29,14 +29,14 @@ const initialState: workoutSliceState = {
 };
 
 export const workoutSlice = createSlice({
-  name: "workoutSlice",
+  name: 'workoutSlice',
   initialState,
   reducers: {
     setInitialWorkouts: (state, action: PayloadAction<workoutSliceState>) => {
       state.daysToWorkouts = action.payload.daysToWorkouts;
     },
     updateWorkout: (state, action: PayloadAction<updateWorkoutSlice>) => {
-      daysOfWeek.map((day) => {
+      daysOfWeek.map(day => {
         state.daysToWorkouts[day].forEach((w, idx) => {
           if (w.id == action.payload.id) {
             state.daysToWorkouts[day][idx] = {
@@ -48,10 +48,8 @@ export const workoutSlice = createSlice({
       });
     },
     deleteWorkout: (state, action: PayloadAction<number>) => {
-      daysOfWeek.map((day) => {
-        state.daysToWorkouts[day] = state.daysToWorkouts[day].filter(
-          (w) => w.id !== action.payload
-        );
+      daysOfWeek.map(day => {
+        state.daysToWorkouts[day] = state.daysToWorkouts[day].filter(w => w.id !== action.payload);
       });
     },
     addWorkout: (state, action: PayloadAction<addWorkoutSlice>) => {
@@ -59,11 +57,8 @@ export const workoutSlice = createSlice({
         ...action.payload.workout,
       });
     },
-    updateLastWorkoutWeight: (
-      state,
-      action: PayloadAction<updateLastWorkoutWeightSlice>
-    ) => {
-      daysOfWeek.map((day) => {
+    updateLastWorkoutWeight: (state, action: PayloadAction<updateLastWorkoutWeightSlice>) => {
+      daysOfWeek.map(day => {
         state.daysToWorkouts[day].forEach((w, idx) => {
           if (w.id == action.payload.id) {
             state.daysToWorkouts[day][idx] = {
@@ -77,12 +72,7 @@ export const workoutSlice = createSlice({
   },
 });
 
-export const {
-  setInitialWorkouts,
-  updateWorkout,
-  deleteWorkout,
-  addWorkout,
-  updateLastWorkoutWeight,
-} = workoutSlice.actions;
+export const { setInitialWorkouts, updateWorkout, deleteWorkout, addWorkout, updateLastWorkoutWeight } =
+  workoutSlice.actions;
 
 export default workoutSlice.reducer;
